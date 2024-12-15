@@ -1,0 +1,25 @@
+FROM node:18-alpine
+
+# Installing libvips-dev for sharp Compatibility
+RUN apk update && apk add --no-cache build-base gcc autoconf automake zlib-dev libpng-dev vips-dev > /dev/null 2>&1
+
+# Set development environment
+ENV NODE_ENV=development
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install dependencies with legacy-peer-deps for development
+RUN npm install --legacy-peer-deps
+
+# Set NODE_PATH so you can require modules from node_modules
+ENV NODE_PATH=/app/node_modules
+ENV PATH /app/node_modules/.bin:$PATH
+
+# Expose port 1337
+EXPOSE 1337
+
+# Use development command
+CMD ["npm", "run", "develop"]
